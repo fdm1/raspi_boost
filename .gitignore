@@ -1,0 +1,6 @@
+pyb00st
+.pyb00st
+.boost_env/*
+__pycache__/*
+*.pyc
+
