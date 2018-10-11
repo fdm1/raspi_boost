@@ -1,7 +1,6 @@
 #! /bin/bash
 
 ROOT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../
-VIRTUALENV_DIR=.boost_env
 PYBOOST_REPO=https://github.com/JorgePe/pyb00st.git
 PYBOOST_DIR=.pyb00st
 PYBOOST_LN=pyb00st
@@ -23,20 +22,10 @@ if [ ! -d $ROOT_DIR/$PYBOOST_DIR ]; then
 fi
 
 
-if [ ! -d $ROOT_DIR/$VIRTUALENV_DIR ]; then
-  virtualenv $VIRTUALENV_DIR
-fi
-
-source $VIRTUALENV_DIR/bin/activate
-
+export WORKON_HOME=$HOME/coding/.virtualenvs
+export VIRTUALENVWRAPPER_PYTHON=$(which python3)
+export VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenv
+source /usr/local/bin/virtualenvwrapper.sh
+mkvirtualenv raspi_boost
+workon raspi_boost
 pip install -r requirements.txt
-
-cat << EOF
-
-============================================================
-boost environment ready. To proceed activate the virtualenv:
-
-  $ source $VIRTUALENV_DIR/bin/activate
-
-============================================================
-EOF

@@ -2,3 +2,4 @@ pexpect
 ipython
 pygatt
 
+pygame
