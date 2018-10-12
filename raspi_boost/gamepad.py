@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from time import sleep
 import evdev
+import pygatt
 
 
 class Gamepad:
@@ -44,3 +45,9 @@ class Gamepad:
                     else:
                         print("Pausing")
                         motor_thread.pause()
+
+    def shutdown(self):
+        # hack figured out - the wiimote will disconnect if the bluetooth adapter restarts
+        bt_adapter = pygatt.GATTToolBackend(hci_device="hci0")
+        bt_adapter.start()
+        bt_adapter.stop()

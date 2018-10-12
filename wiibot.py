@@ -17,6 +17,7 @@ def run():
 
     finally:
         motor_thread.kill()
+        gamepad.shutdown()
 
 if __name__ == '__main__':
     run()
