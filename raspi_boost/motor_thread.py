@@ -1,6 +1,6 @@
 import threading
 from time import sleep
-from hat_position import HatPosition
+from .hat_position import HatPosition
 
 UPDATE_TIME = 200
 STOP_EVENT = threading.Event()
@@ -20,38 +20,37 @@ class MotorThread(threading.Thread):
         self.wheelbot = wheelbot
         print(f"MotorThread Ready")
 
-    def update_motors(self):
+    def convert_position_to_motor_values(self):
         x, y = self.position.get_position()
-        print(f"({x}, {y})")
-        if x == 0:
-            self.left_dc = x
-            self.right_dc = y
-        if x > 0:
-            self.left_dc = x
-            if y >= 0:
-                self.right_dc = (y - x)
-            else:
-                self.right_dc = (y + x)
-        else:
-            self.right_dc = x
-            if y >= 0:
-                self.left_dc = (y - x)
-            else:
-                self.left_dc = (y + x)
+        # wheelbot limits min/max. This is still going over limit, so not ideal
+        self.left_dc = y+x
+        self.right_dc = y-x
+
+    def update_motors(self):
         self.wheelbot.run_right_motor_for_time(UPDATE_TIME * 2, self.left_dc)
         self.wheelbot.run_left_motor_for_time(UPDATE_TIME * 2, self.right_dc)
 
     def run(self):
+        print(f"self.running = {self.running}")
+        print(f"self.stop_event.is_set() = {self.stop_event.is_set()}")
         while self.running:
+            self.convert_position_to_motor_values()
+            print(f"position={self.position}, motors={(self.left_dc, self.right_dc)}")
             if not self.stop_event.is_set():
                 self.update_motors()
-                sleep(UPDATE_TIME / 1000.0)
+
+            sleep(UPDATE_TIME / 1000.0)
 
 
-    def unpause(self, stop_event=STOP_EVENT):
+    def unpause(self):
+        self.paused = False
         self.running = True
-        stop_event.clear()
+        self.stop_event.clear()
 
-    def pause(self, stop_event=STOP_EVENT):
+    def pause(self):
+        self.paused = True
+        self.stop_event.set()
+
+    def kill(self):
+        self.pause()
         self.running = False
-        stop_event.set()

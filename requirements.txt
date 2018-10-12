@@ -2,4 +2,4 @@ pexpect
 ipython
 pygatt
 
-pygame
+evdev
